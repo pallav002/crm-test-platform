@@ -13,23 +13,45 @@ from app.api import auth, admin, candidate
 # Create tables
 Base.metadata.create_all(bind=engine)
 
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
+
 app = FastAPI(title=settings.PROJECT_NAME)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:5174",
-        "https://crm-test-platform.onrender.com",
-        "https://crm-test-platform-live.vercel.app",
-        "https://crm-test-platform-live-p4taw9700-pallav-choudhary.vercel.app"
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Dynamic CORS Middleware to handle Vercel subdomains
+class DynamicCORSMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        origin = request.headers.get("origin")
+        if origin:
+            # Allow localhost, Render, and any Vercel subdomain
+            if (
+                "localhost" in origin or 
+                "127.0.0.1" in origin or 
+                "onrender.com" in origin or 
+                origin.endswith(".vercel.app")
+            ):
+                response.headers["Access-Control-Allow-Origin"] = origin
+                response.headers["Access-Control-Allow-Credentials"] = "true"
+                response.headers["Access-Control-Allow-Methods"] = "*"
+                response.headers["Access-Control-Allow-Headers"] = "*"
+        
+        # Handle preflight requests
+        if request.method == "OPTIONS":
+            return Response(
+                content="OK",
+                headers={
+                    "Access-Control-Allow-Origin": origin or "*",
+                    "Access-Control-Allow-Methods": "*",
+                    "Access-Control-Allow-Headers": "*",
+                    "Access-Control-Allow-Credentials": "true",
+                },
+            )
+        return response
+
+app.add_middleware(DynamicCORSMiddleware)
+
 
 app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
 app.include_router(admin.router, prefix=f"{settings.API_V1_STR}/admin", tags=["admin"])
