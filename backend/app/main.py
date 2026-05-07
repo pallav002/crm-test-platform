@@ -22,7 +22,8 @@ app.add_middleware(
         "http://localhost:5174",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:5174",
-        "https://crm-test-platform.onrender.com"
+        "https://crm-test-platform.onrender.com",
+        "https://crm-test-platform-live.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -39,11 +40,16 @@ def read_root():
 
 def init_db():
     from app.db.session import SessionLocal
+    # Ensure database directory exists if using a subfolder
+    if "sqlite:///./database/" in settings.DATABASE_URL:
+        os.makedirs("./database", exist_ok=True)
+        
     db = SessionLocal()
     try:
         # Create default admin if not exists
         admin_user = db.query(models.User).filter(models.User.username == "admin").first()
         if not admin_user:
+            print("INFO: Creating default admin user...")
             admin_user = models.User(
                 username="admin",
                 hashed_password=security.get_password_hash("admin123"),
@@ -54,9 +60,16 @@ def init_db():
             db.add(admin_user)
             db.commit()
             print("INFO: Default admin user created successfully.")
+        else:
+            # Optionally update password to ensure it's admin123 and correctly hashed
+            admin_user.hashed_password = security.get_password_hash("admin123")
+            db.commit()
+            print("INFO: Admin user already exists. Password reset to default for safety.")
     except Exception as e:
         print(f"ERROR: Could not initialize database: {e}")
     finally:
         db.close()
 
+# Run initialization
 init_db()
+
