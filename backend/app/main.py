@@ -25,12 +25,13 @@ class DynamicCORSMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         origin = request.headers.get("origin")
         if origin:
-            # Allow localhost, Render, and any Vercel subdomain
+            # Allow localhost, Render, Vercel, and GitHub Pages
             if (
                 "localhost" in origin or 
                 "127.0.0.1" in origin or 
                 "onrender.com" in origin or 
-                origin.endswith(".vercel.app")
+                origin.endswith(".vercel.app") or
+                origin.endswith(".github.io")
             ):
                 response.headers["Access-Control-Allow-Origin"] = origin
                 response.headers["Access-Control-Allow-Credentials"] = "true"
