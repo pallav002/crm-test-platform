@@ -23,7 +23,8 @@ app.add_middleware(
         "http://127.0.0.1:5173",
         "http://127.0.0.1:5174",
         "https://crm-test-platform.onrender.com",
-        "https://crm-test-platform-live.vercel.app"
+        "https://crm-test-platform-live.vercel.app",
+        "https://crm-test-platform-live-p4taw9700-pallav-choudhary.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
