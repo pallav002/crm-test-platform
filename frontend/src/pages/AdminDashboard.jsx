@@ -159,24 +159,29 @@ const AdminDashboard = () => {
 
                 {/* Tests Tab */}
                 {activeTab === 'tests' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, 300px)', gap: '1.5rem' }}>
                         {tests.map(test => (
-                            <div key={test.id} className="glass-card" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-                                    <h3 style={{ fontSize: '1.25rem' }}>{test.title}</h3>
-                                    <button onClick={() => handleDeleteTest(test.id)} style={{ color: 'var(--error)', padding: '0.5rem', opacity: 0.6 }} className="btn btn-icon">
-                                        <Trash2 size={18} />
+                            <div key={test.id} className="glass-card" style={{ width: '300px', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                                {/* Title row */}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <h3 style={{ fontSize: '1.05rem', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '220px' }}>{test.title}</h3>
+                                    <button onClick={() => handleDeleteTest(test.id)} style={{ color: 'var(--error)', background: 'none', border: 'none', cursor: 'pointer', padding: '0.2rem', flexShrink: 0 }}>
+                                        <Trash2 size={16} />
                                     </button>
                                 </div>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem', flex: 1 }}>{test.description}</p>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '12px' }}>
-                                    <span style={{ fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><FileText size={16} color="var(--primary)" /> {test.questions?.length || 0} Questions</span>
-                                    <div style={{ textAlign: 'right' }}>
-                                        <div style={{ fontSize: '0.875rem', fontWeight: '600' }}>{test.duration_minutes}m</div>
-                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{test.time_per_question_seconds}s/q</div>
-                                    </div>
+                                {/* Description */}
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', minHeight: '2.4em' }}>{test.description}</p>
+                                {/* Stats row */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                                    <FileText size={13} color="var(--primary)" />
+                                    <span>{test.questions?.length || 0} Q</span>
+                                    <span>·</span>
+                                    <span>{test.duration_minutes}m</span>
+                                    <span>·</span>
+                                    <span>{test.time_per_question_seconds}s/q</span>
                                 </div>
-                                <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.5rem' }}>
+                                {/* Upload button */}
+                                <div>
                                     <input
                                         type="file"
                                         id={`pdf-${test.id}`}
@@ -199,8 +204,8 @@ const AdminDashboard = () => {
                                             }
                                         }}
                                     />
-                                    <label htmlFor={`pdf-${test.id}`} className="btn" style={{ border: '1px solid var(--border)', flex: 1, cursor: 'pointer', opacity: test.isUploading ? 0.5 : 1 }}>
-                                        {test.isUploading ? 'Parsing...' : 'Update PDF Questions'}
+                                    <label htmlFor={`pdf-${test.id}`} style={{ display: 'block', width: '100%', padding: '0.6rem 0', textAlign: 'center', border: '1px solid var(--border)', borderRadius: '0.75rem', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '500', color: 'var(--text)', opacity: test.isUploading ? 0.5 : 1, background: 'white' }}>
+                                        {test.isUploading ? 'Parsing...' : 'Upload PDF Questions'}
                                     </label>
                                 </div>
                             </div>
